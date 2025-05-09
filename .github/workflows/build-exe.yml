@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pyinstaller
+          pip install -r requirements.txt
 
       - name: Find PyQt5 plugin path
         id: find_pyqt5
