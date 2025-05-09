@@ -25,7 +25,7 @@ jobs:
 
       - name: Build EXE
         run: |
-          pyinstaller --onefile --noconsole --icon=resources/icon.ico app/main.py
+          pyinstaller --onefile --noconsole app/main.py
 
       - name: Create GitHub Release
         id: create_release
