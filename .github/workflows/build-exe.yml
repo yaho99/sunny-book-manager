@@ -23,14 +23,9 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Find PyQt5 plugin path
-        id: find_pyqt5
-        run: |
-          echo "PYQT5_PLUGIN_PATH=$(python -c "import PyQt5, os; print(os.path.join(os.path.dirname(PyQt5.__file__), 'Qt', 'plugins', 'platforms'))")" >> $GITHUB_ENV
-
       - name: Build EXE
         run: |
-          pyinstaller --onefile --noconsole --add-data "${env:PYQT5_PLUGIN_PATH};platforms" app/main.py
+          pyinstaller --onefile --noconsole app/main.py
 
       - name: Create GitHub Release
         id: create_release
