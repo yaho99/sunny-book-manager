@@ -30,7 +30,7 @@ jobs:
 
       - name: Build EXE
         run: |
-          pyinstaller --onefile --noconsole --add-data "$env:PYQT5_PLUGIN_PATH;platforms" app/main.py
+          pyinstaller --onefile --noconsole --add-data "${env:PYQT5_PLUGIN_PATH};platforms" app/main.py
 
       - name: Create GitHub Release
         id: create_release
