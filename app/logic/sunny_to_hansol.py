@@ -1,9 +1,9 @@
 import os
-import sys
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
+from openpyxl import load_workbook
 
 
 def convert_sunny_to_hansol(input_path, output_path, start_date):
@@ -102,12 +102,6 @@ def convert_data(df):
     # N 컬럼 매핑
     df['런 상품명'] = df['런 상품명'].map(mapping_dict).fillna(df['런 상품명'])
 
-    # B 컬럼을 m월 d일 형식으로 변환
-    if sys.platform.startswith('win'):
-        df['날짜'] = df['날짜'].dt.strftime('%#m월 %#d일')
-    else:
-        df['날짜'] = df['날짜'].dt.strftime('%-m월 %-d일')
-
     # O 컬럼 → 부호 반전
     df['수량1'] = df['수량1'].abs()
 
@@ -155,6 +149,18 @@ def append_to_output_file(output_file, df, sheet_name='주문서'):
     with pd.ExcelWriter(new_file, engine='openpyxl') as writer:
         for name, df in sheets.items():
             df.to_excel(writer, sheet_name=name, index=False)
+
+    # 날짜 포맷 적용
+    wb = load_workbook(new_file)
+    ws = wb[sheet_name]
+
+    # 두 번째 열 (엑셀은 1-based index → column B = 2)
+    for row in ws.iter_rows(min_row=2, min_col=1, max_col=1):  # 주문일시 row만
+        for cell in row:
+            cell.number_format = 'm"월" d"일"'
+
+    # 저장
+    wb.save(new_file)
 
     print(f"새 파일 저장 완료: {new_file}")
     return new_file
