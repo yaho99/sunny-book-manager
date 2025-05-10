@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QDate
 from PyQt5.QtWidgets import *
 
-from app.logic.excel_converter import convert_excel
+from app.logic.sunny_to_hansol import convert_sunny_to_hansol
 
 
 class MainWindow(QWidget):
@@ -79,7 +79,7 @@ class MainWindow(QWidget):
             return
 
         try:
-            output_path = convert_excel(self.input_file, self.output_file, self.start_date)
+            output_path = convert_sunny_to_hansol(self.input_file, self.output_file, self.start_date)
             QMessageBox.information(self, "완료", f"변환 완료!\n저장 위치: {output_path}")
         except Exception as e:
             QMessageBox.critical(self, "오류", f"변환 중 오류 발생:\n{str(e)}")

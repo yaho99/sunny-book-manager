@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 
-def convert_excel(input_path, output_path, start_date):
+def convert_sunny_to_hansol(input_path, output_path, start_date):
     df = pd.read_excel(input_path, sheet_name="장부(24.01~)")
     filtered_df = filter_data(df, start_date)
     converted_df = convert_data(filtered_df)
