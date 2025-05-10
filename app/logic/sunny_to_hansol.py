@@ -1,8 +1,9 @@
+import os
+import sys
 from datetime import datetime
 
-import pandas as pd
 import numpy as np
-import os
+import pandas as pd
 
 
 def convert_sunny_to_hansol(input_path, output_path, start_date):
@@ -39,7 +40,7 @@ def filter_data(df, start_date):
     return filtered_df
 
 
-def convert_data(filtered_df):
+def convert_data(df):
     # 매핑 코드 정의
     mapping_dict = {
         '한솔A4-75g': '한솔A4-75',
@@ -99,18 +100,24 @@ def convert_data(filtered_df):
     }
 
     # N 컬럼 매핑
-    filtered_df['런 상품명'] = filtered_df['런 상품명'].map(mapping_dict).fillna(filtered_df['런 상품명'])
+    df['런 상품명'] = df['런 상품명'].map(mapping_dict).fillna(df['런 상품명'])
+
+    # B 컬럼을 m월 d일 형식으로 변환
+    if sys.platform.startswith('win'):
+        df['날짜'] = df['날짜'].dt.strftime('%#m월 %#d일')
+    else:
+        df['날짜'] = df['날짜'].dt.strftime('%-m월 %-d일')
 
     # O 컬럼 → 부호 반전
-    filtered_df['수량1'] = filtered_df['수량1'].abs()
+    df['수량1'] = df['수량1'].abs()
 
-    return filtered_df
+    return df
 
 
 def rearrange_columns(df):
     new_df = pd.DataFrame()
 
-    new_df['주문일시'] = df['날짜']
+    new_df['주문일시'] = df['날짜']  # m월 d일로 변환
     new_df['출고/보관'] = df['거래유형']
     new_df['빈칸'] = ''
     new_df['판매처'] = '정명선'
@@ -129,7 +136,8 @@ def rearrange_columns(df):
 
     return new_df
 
-def append_to_output_file(output_file, final_df, sheet_name='주문서'):
+
+def append_to_output_file(output_file, df, sheet_name='주문서'):
     # 기존 파일의 모든 시트 읽기
     sheets = pd.read_excel(output_file, sheet_name=None)
 
@@ -137,7 +145,7 @@ def append_to_output_file(output_file, final_df, sheet_name='주문서'):
     existing_df = sheets[sheet_name]
 
     # 기존 데이터 + 새 데이터 이어붙이기
-    combined_df = pd.concat([existing_df, final_df], ignore_index=True)
+    combined_df = pd.concat([existing_df, df], ignore_index=True)
 
     # 업데이트된 주문서 시트로 교체
     sheets[sheet_name] = combined_df
