@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pandas as pd
+import numpy as np
 import os
 
 
@@ -14,9 +15,6 @@ def convert_excel(input_path, output_path, start_date):
 
 def filter_data(df, start_date):
     df = df.iloc[1:].reset_index(drop=True)
-
-    # B 컬럼 (yyyy.MM.dd 형태 → datetime 변환)
-    print(df.columns)
 
     # start_date (QDate) → datetime 변환
     start_datetime = datetime(
@@ -104,7 +102,7 @@ def convert_data(filtered_df):
     filtered_df['런 상품명'] = filtered_df['런 상품명'].map(mapping_dict).fillna(filtered_df['런 상품명'])
 
     # O 컬럼 → 부호 반전
-    filtered_df['수량1'] = filtered_df['수량1'] * -1
+    filtered_df['수량1'] = filtered_df['수량1'].abs()
 
     return filtered_df
 
@@ -127,6 +125,7 @@ def rearrange_columns(df):
     new_df['2'] = ''
     new_df['3'] = ''
     new_df['배송메시지'] = df['배송메모']
+    new_df['재고수량'] = np.where(df['거래유형'] == '출고', df['수량1'] * -1, df['수량1'])
 
     return new_df
 
