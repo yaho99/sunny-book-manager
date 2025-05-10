@@ -7,7 +7,7 @@ from openpyxl import load_workbook
 
 
 def convert_sunny_to_hansol(input_path, output_path, start_date):
-    df = pd.read_excel(input_path, sheet_name="장부(24.01~)")
+    df = pd.read_excel(input_path, sheet_name="장부(24.01~)", engine='openpyxl')
     filtered_df = filter_data(df, start_date)
     converted_df = convert_data(filtered_df)
     final_df = rearrange_columns(converted_df)
@@ -133,7 +133,7 @@ def rearrange_columns(df):
 
 def append_to_output_file(output_file, df, sheet_name='주문서'):
     # 기존 파일의 모든 시트 읽기
-    sheets = pd.read_excel(output_file, sheet_name=None)
+    sheets = pd.read_excel(output_file, sheet_name=None, engine='openpyxl')
 
     # 주문서 시트 가져오기
     existing_df = sheets[sheet_name]
@@ -158,6 +158,10 @@ def append_to_output_file(output_file, df, sheet_name='주문서'):
     for row in ws.iter_rows(min_row=2, min_col=1, max_col=1):  # 주문일시 row만
         for cell in row:
             cell.number_format = 'm"월" d"일"'
+
+    # header row 설정
+    ws.freeze_panes = 'A2'
+    ws.auto_filter.ref = ws.dimensions
 
     # 저장
     wb.save(new_file)
