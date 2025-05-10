@@ -133,7 +133,7 @@ def append_to_output_file(output_file, final_df, sheet_name='주문서'):
     # 기존 파일의 모든 시트 읽기
     sheets = pd.read_excel(output_file, sheet_name=None)
 
-    # 주문서 시트 가져오기 (무조건 존재한다고 가정)
+    # 주문서 시트 가져오기
     existing_df = sheets[sheet_name]
 
     # 기존 데이터 + 새 데이터 이어붙이기
